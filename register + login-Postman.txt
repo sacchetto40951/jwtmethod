@@ -1,6 +1,106 @@
-register + login
+LOGIN E CRUD - POSTMAN
 
------------POST----------------
+Base URL: http://127.0.0.1:5000
+
+IMPORTANTE SOBRE O TOKEN
+1. Execute o login.
+2. Copie somente o valor de access_token da resposta.
+3. No Postman, abra Authorization, escolha Bearer Token e cole somente o token.
+   Nao escreva "Bearer " dentro do campo Token; o Postman adiciona isso sozinho.
+4. Para conferir manualmente, o header enviado deve ser:
+  Authorization: Bearer <Token Aqui>
+
+----------- CADASTRAR USUARIO ----------------
+
+POST http://127.0.0.1:5000/users/register
+
+Body > raw > JSON:
+{
+  "username": "testuser",
+  "password": "senha123"
+}
+
+Tambem funciona: POST http://127.0.0.1:5000/users/
+
+----------- LOGIN -----------------------------
+
+POST http://127.0.0.1:5000/users/login
+
+Body > raw > JSON:
+{
+  "username": "testuser",
+  "password": "senha123"
+}
+
+Resposta esperada:
+{
+  "access_token": "..."
+}
+
+----------- USUARIO LOGADO (/me) ---------------
+
+Todas as requisicoes abaixo exigem Authorization > Bearer Token.
+
+GET http://127.0.0.1:5000/users/me
+
+PUT http://127.0.0.1:5000/users/me
+
+Body > raw > JSON:
+{
+  "username": "testuser_novo",
+  "password": "senha456"
+}
+
+DELETE http://127.0.0.1:5000/users/me
+
+----------- USUARIO POR ID ---------------------
+
+GET http://127.0.0.1:5000/users/1
+PUT http://127.0.0.1:5000/users/1
+DELETE http://127.0.0.1:5000/users/1
+
+GET, PUT e DELETE exigem token. No PUT, use um body como:
+{
+  "username": "testuser_novo"
+}
+
+----------- FORMULARIO -------------------------
+
+POST http://127.0.0.1:5000/formularios/
+
+Authorization > Bearer Token
+
+Body > raw > JSON:
+{
+  "nome": "Joao da Silva",
+  "email": "joao.silva@example.com",
+  "data_nascimento": "1990-01-01",
+  "cpf": "12345678900",
+  "genero": "Masculino"
+}
+
+GET http://127.0.0.1:5000/formularios/1
+PUT http://127.0.0.1:5000/formularios/1
+DELETE http://127.0.0.1:5000/formularios/1
+
+GET, PUT e DELETE exigem token. No PUT, use um body como:
+{
+  "nome": "Joao da Silva Atualizado"
+}
+
+
+1. Execute GET, PUT e DELETE sem Authorization.
+   Resultado esperado: a API bloqueia com status 401.
+
+2. Execute uma operacao com token valido.
+   Resultado esperado: a API permite a operacao.
+
+3. Consulte um ID inexistente, por exemplo:
+GET http://127.0.0.1:5000/users/999
+GET http://127.0.0.1:5000/formularios/999
+
+Resultado esperado: status 404 e mensagem informando que o registro nao foi encontrado.
+
 
 http://127.0.0.1:5000/users/register
 
@@ -9,7 +109,6 @@ http://127.0.0.1:5000/users/register
   "password": "senha123"
 }
 
--------------------------------
 http://127.0.0.1:5000/users/login
 
 {
@@ -17,14 +116,12 @@ http://127.0.0.1:5000/users/login
   "password": "senha123"
 }
 
------------GET----------------
 
 http://127.0.0.1:5000/users/me
 
-Authorization - type - Bearer Token Token exp: [colocar código gerado do login]
+Authorization - type - Bearer Token: <Token Aqui>
 
 
------------PUT----------------
 
 http://127.0.0.1:5000/users/me
 
@@ -33,18 +130,15 @@ http://127.0.0.1:5000/users/me
   "password": "senha123"
 }
 
-Authorization - type - Bearer Token Token exp: [colocar código gerado do login]
+Authorization - type - Bearer Token: <Token Aqui>
 
------------DELETE-------------
 
 http://127.0.0.1:5000/users/me
 
-Authorization - type - Bearer Token Token exp: [colocar código gerado do login]
+Authorization - type - Bearer Token: <Token Aqui>
 
 
-----------------FORMULARIO------------
 
------------POST----------------
 
 http://localhost:5000/formularios
 
@@ -56,5 +150,5 @@ http://localhost:5000/formularios
     "genero": "Masculino"
 }
 
-Authorization - type - Bearer Token Token exp: [colocar código gerado do login]
+Authorization - type - Bearer Token: <Token Aqui>
 

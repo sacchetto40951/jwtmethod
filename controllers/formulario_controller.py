@@ -1,20 +1,4 @@
-import json
-
-from flask import make_response
-
 from models.formulario_model import FormularioModel  
-
-
-def _json_response(message, payload, status=200):
-    response = make_response(
-        json.dumps({
-            'mensagem': message,
-            'dados': payload  
-        }, ensure_ascii=False, sort_keys=False),
-        status
-    )
-    response.headers['Content-Type'] = 'application/json'
-    return response
 
 
 class FormularioController:
@@ -36,6 +20,28 @@ class FormularioController:
         return {"error": "Erro ao criar formulário"}, 500 
 
     @staticmethod
-    def formulario_get():
-        form = FormularioModel.query.all()
-        return _json_response('Dados', [item.json() for item in form])
+    def get_formulario(formulario_id):
+        formulario = FormularioModel.find_by_id(formulario_id)
+        if not formulario:
+            return {"error": "Formulário não encontrado"}, 404
+        return {"dados": dict(formulario)}, 200
+
+    @staticmethod
+    def update_formulario(formulario_id, data):
+        formulario = FormularioModel.find_by_id(formulario_id)
+        if not formulario:
+            return {"error": "Formulário não encontrado"}, 404
+
+        allowed_fields = ('nome', 'email', 'data_nascimento', 'cpf', 'genero')
+        if not any(field in data and data[field] for field in allowed_fields):
+            return {"error": "Informe ao menos um campo válido para atualizar"}, 400
+
+        if not FormularioModel.update_formulario(formulario_id, data):
+            return {"error": "Erro ao atualizar formulário"}, 400
+        return {"message": "Formulário atualizado com sucesso"}, 200
+
+    @staticmethod
+    def delete_formulario(formulario_id):
+        if not FormularioModel.delete_formulario(formulario_id):
+            return {"error": "Formulário não encontrado"}, 404
+        return {"message": "Formulário excluído com sucesso"}, 200

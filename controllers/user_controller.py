@@ -33,3 +33,34 @@ class UserController:
             return {"access_token": access_token}, 200  
 
         return {"error": "Nome de usuário ou senha inválidos"}, 401 
+
+    @staticmethod
+    def get_user(user_id):
+        user = UserModel.find_by_id(user_id)
+        if not user:
+            return {"error": "Usuário não encontrado"}, 404
+        return {
+            "dados": {"id": user["id"], "username": user["username"]}
+        }, 200
+
+    @staticmethod
+    def update_user(user_id, data):
+        user = UserModel.find_by_id(user_id)
+        if not user:
+            return {"error": "Usuário não encontrado"}, 404
+
+        username = data.get('username')
+        password = data.get('password')
+        if not username and not password:
+            return {"error": "Informe username ou password para atualizar"}, 400
+
+        hashed_password = generate_password_hash(password) if password else None
+        if not UserModel.update_user(user_id, username, hashed_password):
+            return {"error": "Nome de usuário já existe ou dados inválidos"}, 400
+        return {"message": "Usuário atualizado com sucesso"}, 200
+
+    @staticmethod
+    def delete_user(user_id):
+        if not UserModel.delete_user(user_id):
+            return {"error": "Usuário não encontrado"}, 404
+        return {"message": "Usuário excluído com sucesso"}, 200
